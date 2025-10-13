@@ -1,0 +1,48 @@
+:root {
+  --g1:#5b2a86;
+  --g2:#b03ea9;
+  --g3:#ff5363;
+  --g4:#ff8a3d;
+  --gradient: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g4));
+}
+
+.navbar {
+  backdrop-filter: saturate(120%) blur(6px);
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+/* Logo */
+.brand-img {
+  height: 52px;
+  width: auto;
+  image-rendering: -webkit-optimize-contrast;
+}
+@media (min-width: 992px) {
+  .brand-img {
+    height: 60px;
+  }
+}
+
+/* Boutons */
+.btn-outline-primary {
+  --bs-btn-color: var(--g1);
+  --bs-btn-border-color: var(--g1);
+  --bs-btn-hover-bg: var(--g1);
+  --bs-btn-hover-border-color: var(--g1);
+  --bs-btn-hover-color: #fff;
+}
+
+.btn-outline-success {
+  --bs-btn-color: var(--g4);
+  --bs-btn-border-color: var(--g4);
+  --bs-btn-hover-bg: var(--g4);
+  --bs-btn-hover-border-color: var(--g4);
+  --bs-btn-hover-color: #fff;
+}
+
+/* Lien actif */
+.nav-link.active {
+  color: var(--g1) !important;
+  font-weight: 600;
+}

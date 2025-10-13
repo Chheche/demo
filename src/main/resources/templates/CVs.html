@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerTrackr</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <style>
+        :root {
+            --g1: #5b2a86;
+            --g2: #b03ea9;
+            --g3: #ff5363;
+            --g4: #ff8a3d;
+            --gradient: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g4));
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        .headerContainer {
+            background: var(--gradient);
+            padding: 0 0 2px 0;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .logo-text {
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .headerLinks a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 24px;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+        .headerLinks a:hover {
+            color: #ff8a3d;
+        }
+        .hero {
+            background: var(--gradient);
+            color: #fff;
+            text-align: center;
+            padding: 48px 0 32px 0;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 32px;
+            margin: 40px auto;
+            max-width: 1200px;
+            padding: 0 24px;
+        }
+        .feature {
+            width: 100%;
+            max-width: 360px;
+            justify-self: center;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(91,42,134,0.10), 0 1.5px 8px rgba(255,83,99,0.07);
+            flex: 1 1 0;
+            min-width: 220px;
+            max-width: 260px;
+            min-height: 320px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 38px 18px 24px 18px;
+            transition: box-shadow 0.2s, transform 0.2s;
+            overflow: hidden;
+        }
+        .feature:hover {
+            box-shadow: 0 8px 32px rgba(176,62,169,0.18), 0 2px 12px rgba(255,83,99,0.10);
+            transform: translateY(-6px) scale(1.03);
+        }
+        .feature img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(91,42,134,0.07);
+        }
+        .feature h2 {
+            font-size: 1.1rem;
+            color: var(--g1);
+            margin-bottom: 8px;
+            margin-top: 0;
+            text-align: center;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
+            max-height: 3.3em; /* Permet environ 3 lignes */
+            line-height: 1.1em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .feature p {
+            color: #444;
+            font-size: 1.05rem;
+            margin: 4px 0;
+        }
+
+        .add-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #2196F3;
+            color: white;
+            font-size: 24px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .add-button:hover {
+            transform: scale(1.1);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 32px;
+            height: 32px;
+            background: #fff;
+            border: 2px solid var(--g3);
+            color: var(--g3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 1px 6px rgba(255,83,99,0.10);
+            transition: background 0.15s, color 0.15s, border 0.15s;
+            z-index: 2;
+        }
+        .delete-btn:hover {
+            background: var(--g3);
+            color: #fff;
+            border-color: var(--g1);
+        }
+        html, body {
+            height: 100%;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1 0 auto;
+        }
+        .footer {
+            background: #fff;
+            color: var(--g1);
+            text-align: center;
+            padding: 18px 0 10px 0;
+            font-size: 1rem;
+            border-top: 2px solid var(--g2);
+            margin-top: 0;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 12px rgba(91,42,134,0.04);
+        }
+
+        /* Style pour la modal PDF */
+        .pdf-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000;
+        }
+
+        .pdf-modal-content {
+            width: 90%;
+            height: 90%;
+            margin: 2% auto;
+        }
+
+        .pdf-modal-content object {
+            width: 100%;
+            height: 100%;
+        }
+
+        .pdf-close {
+            position: absolute;
+            right: 25px;
+            top: 10px;
+            color: #fff;
+            font-size: 35px;
+            cursor: pointer;
+        }
+        .pdf-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+
+        .pdf-preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .click-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            background: transparent;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="headerContainer">
+        <div class="header">
+            <a  th:href="@{/CVs}" class="logo">
+                <img th:src="@{/Img/logo.png}" alt="logo">
+                <span class="logo-text">CareerTrackr</span>
+            </a>
+            <nav class="headerLinks">
+                <a th:href="@{/candidatures}">Profil</a>
+                <a th:href="@{/CVs}">Vos CVs</a>
+                <a th:href="@{/logout}">Se déconnecter</a>
+            </nav>
+        </div>
+    </div>
+
+    <main>
+        <section class="hero">
+            <h1>Découvrez vos cvs !</h1>
+            <p>Gérez vos cvs en toute simplicité.</p>
+        </section>
+        <section class="features">
+            <div class="cv-list">
+                <div th:if="${data != null}">
+                    <ul>
+                        <li th:each="cv : ${data}">
+                            <span th:text="${cv.fileName}">Nom du fichier</span>
+                            <a th:href="@{'/download/' + ${cv.id}}" target="_blank">Télécharger</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <form id="uploadForm" action="/uploadCv" method="post" enctype="multipart/form-data">
+            <input type="file" id="file-input" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" onchange="this.form.submit()" hidden>
+            <button type="button" class="add-button" onclick="document.getElementById('file-input').click()">+</button>
+        </form>
+
+        <div id="pdfModal" class="pdf-modal">
+            <span class="pdf-close" onclick="closePdfModal()">&times;</span>
+            <div class="pdf-modal-content">
+                <object id="pdfViewer" type="application/pdf" width="100%" height="100%">
+                    <p>Erreur d'affichage !</p>
+                </object>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.querySelectorAll('.delete-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                const block = btn.closest('.feature');
+                if (block) block.remove();
+            });
+        });
+
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            if (this.files && this.files.length > 0) {
+                const file = this.files[0];
+                const fileURL = URL.createObjectURL(file);
+                
+                // Créer une nouvelle carte
+                const newFeature = document.createElement('div');
+                newFeature.className = 'feature';
+                
+                // Contenu de la carte
+                newFeature.innerHTML = `
+                    <button class="delete-btn" title="Supprimer ce CV" onclick="this.closest('.feature').remove()">&#10005;</button>
+                    <div class="pdf-wrapper">
+                        ${file.type === 'application/pdf' 
+                            ? `<object class="pdf-preview" data="${fileURL}" type="application/pdf">
+                                <p>Impossible d'afficher l'aperçu PDF</p>
+                            </object>
+                            <div class="click-overlay" onclick="openPdfModal('${fileURL}', 'pdf')"></div>`
+                            : `<img src="${fileURL}" alt="CV" class="pdf-preview" onclick="openPdfModal('${fileURL}', 'image')">`
+                        }
+                    </div>
+                    <h2 style="margin-top: 30px;">${file.name}</h2>
+                `;
+
+
+                // Ajouter la carte à la section
+                document.querySelector('.features').appendChild(newFeature);
+            }
+        });
+
+        function openPdfModal(url) {
+            const modal = document.getElementById('pdfModal');
+            const pdfViewer = document.getElementById('pdfViewer');
+            pdfViewer.data = url;
+            modal.style.display = 'block';
+        }
+
+        function closePdfModal() {
+            document.getElementById('pdfModal').style.display = 'none';
+        }
+
+        // Fermer la modal si on clique en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('pdfModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+    <footer class="footer">
+        <p>Copyright &copy; 2025 CareerTrackr. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
+

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" th:href="@{/Img/logo.png}">
+  <link rel="stylesheet" th:href="@{/css/navbar.css}">
+  <title>CareerTrackr – Suivi de candidatures</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      /* Dégradé */
+      --g1:#5b2a86;   
+      --g2:#b03ea9;   
+      --g3:#ff5363;   
+      --g4:#ff8a3d;   
+      --gradient: linear-gradient(90deg,var(--g1),var(--g2),var(--g3),var(--g4));
+    }
+
+    html,body{background:#fff;color:#0f172a;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;}
+    .navbar{backdrop-filter:saturate(120%) blur(6px);}
+    .brand-img{
+      height:56px; width:auto; image-rendering:-webkit-optimize-contrast;
+    }
+    @media (min-width:992px){ .brand-img{ height:64px; } }
+
+    /* Boutons */
+    .btn-outline-primary{
+      --bs-btn-color: var(--g1);
+      --bs-btn-border-color: var(--g1);
+      --bs-btn-hover-bg: var(--g1);
+      --bs-btn-hover-border-color: var(--g1);
+    }
+    .btn-outline-success{
+      --bs-btn-color: var(--g4);
+      --bs-btn-border-color: var(--g4);
+      --bs-btn-hover-bg: var(--g4);
+      --bs-btn-hover-border-color: var(--g4);
+      --bs-btn-hover-color:#fff;
+    }
+
+    .gradient-text{
+      background: var(--gradient);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: sheen 8s ease-in-out infinite;
+      font-weight: 800;
+      letter-spacing: .5px;
+    }
+    @keyframes sheen{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+
+    .fade-up{
+      opacity:0; transform: translateY(14px);
+      animation: fadeUp .9s cubic-bezier(.2,.6,.2,1) forwards;
+    }
+    .fade-up.delay-1{ animation-delay:.15s; }
+    .fade-up.delay-2{ animation-delay:.35s; }
+
+    @keyframes fadeUp{
+      to{ opacity:1; transform: none; }
+    }
+
+    .title-underline{
+      position:relative; display:inline-block; padding-bottom:.25rem;
+    }
+    .title-underline::after{
+      content:"";
+      position:absolute; left:50%; transform:translateX(-50%);
+      bottom:-8px; height:4px; width:140px; border-radius:999px;
+      background: var(--gradient); background-size:200% 200%;
+      animation: sheen 8s ease-in-out infinite;
+      box-shadow: 0 1px 0 rgba(0,0,0,.04);
+    }
+
+    
+    .lead{
+      font-size:1.2rem; line-height:1.8;
+      color:#24304a;
+    }
+    .badge-soft{
+      display:inline-block; padding:.4rem .7rem; border-radius:999px;
+      background:linear-gradient(90deg, #f9fafb, #fff);
+      border:1px solid rgba(15,23,42,.08);
+      box-shadow:0 4px 14px rgba(16,24,40,.06);
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar bg-white border-bottom sticky-top">
+    <div class="container-fluid px-3 px-lg-4">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <img class="brand-img" th:src="@{/Img/logo.png}" alt="CareerTrackr Logo" />
+        <span class="fw-semibold">CareerTrackr</span>
+      </a>
+      <div class="d-flex gap-2">
+        <a th:href="@{/auth}" class="btn btn-outline-success">S'authentifier</a>
+      </div>
+    </div>  
+  </nav>
+
+ 
+  <section class="container py-5 py-md-6">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10 text-center">
+        <h1 class="display-5 gradient-text title-underline fade-up">Description</h1>
+
+
+        <p class="lead mt-4 fade-up delay-2">
+          <strong>CareerTrackr</strong> révolutionne la gestion de vos candidatures ! 
+          Connectez-vous simplement avec votre compte Google et notre IA analysera 
+          automatiquement vos emails pour extraire et classer vos candidatures. 
+          Plus besoin de saisie manuelle : refus, entretiens, confirmations... 
+          Tout est détecté et organisé automatiquement !
+        </p>
+
+        <div class="mt-5 fade-up delay-2">
+          <div class="row g-4 text-start">
+            <div class="col-md-4">
+              <div class="d-flex align-items-start gap-3">
+                <div class="badge-soft">📧</div>
+                <div>
+                  <h6 class="fw-semibold mb-2">Analyse automatique</h6>
+                  <small class="text-muted">Vos emails de candidature sont analysés par IA</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex align-items-start gap-3">
+                <div class="badge-soft">🔐</div>
+                <div>
+                  <h6 class="fw-semibold mb-2">Connexion sécurisée</h6>
+                  <small class="text-muted">Authentification Google OAuth2 sécurisée</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex align-items-start gap-3">
+                <div class="badge-soft">⚡</div>
+                <div>
+                  <h6 class="fw-semibold mb-2">Zéro configuration</h6>
+                  <small class="text-muted">Pas de compte à créer, juste se connecter</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
