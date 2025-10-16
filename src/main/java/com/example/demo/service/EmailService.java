@@ -30,4 +30,8 @@ public class EmailService {
         email.setEtat(newEtat);
         EmailRepository.save(email);
     }
+
+    public void deleteEmailsBySource(String source) {
+        EmailRepository.deleteBySource(source);
+    }
 }

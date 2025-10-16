@@ -80,6 +80,56 @@
             max-width: 1200px;
             padding: 0 24px;
         }
+
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+                padding: 0 16px;
+                gap: 20px;
+            }
+
+            .feature {
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .pdf-modal {
+                padding: 10px;
+            }
+
+            .pdf-modal-content {
+                width: 100%;
+                height: 90vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .headerLinks a {
+                margin-left: 12px;
+                font-size: 1rem;
+            }
+
+            .logo-text {
+                font-size: 1.2rem;
+            }
+
+            .logo img {
+                height: 32px;
+            }
+        }
+
         .feature {
             width: 100%;
             max-width: 360px;
@@ -204,47 +254,59 @@
         }
 
         /* Style pour la modal PDF */
-        .pdf-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            z-index: 1000;
-        }
-
-        .pdf-modal-content {
-            width: 90%;
-            height: 90%;
-            margin: 2% auto;
-        }
-
-        .pdf-modal-content object {
-            width: 100%;
-            height: 100%;
-        }
-
-        .pdf-close {
-            position: absolute;
-            right: 25px;
-            top: 10px;
-            color: #fff;
-            font-size: 35px;
-            cursor: pointer;
-        }
         .pdf-wrapper {
             position: relative;
             width: 100%;
-            height: 200px;
+            height: 250px;
+            margin-bottom: 20px;
         }
 
         .pdf-preview {
             width: 100%;
             height: 100%;
+            border: none;
             border-radius: 8px;
-            object-fit: contain;
+        }
+
+        .pdf-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .pdf-modal-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .pdf-modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .pdf-close {
+            position: absolute;
+            right: 25px;
+            top: 15px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
         .click-overlay {
@@ -254,7 +316,6 @@
             width: 100%;
             height: 100%;
             cursor: pointer;
-            background: transparent;
         }
 
     </style>
@@ -281,15 +342,23 @@
             <p>Gérez vos cvs en toute simplicité.</p>
         </section>
         <section class="features">
-            <div class="cv-list">
-                <div th:if="${data != null}">
-                    <ul>
-                        <li th:each="cv : ${data}">
-                            <span th:text="${cv.fileName}">Nom du fichier</span>
-                            <a th:href="@{'/download/' + ${cv.id}}" target="_blank">Télécharger</a>
-                        </li>
-                    </ul>
+            <div th:if="${data != null}" th:each="cv : ${data}" class="feature">
+                <button class="delete-btn" 
+                title="Supprimer ce CV" 
+                th:onclick="'deleteCv(' + ${cv.id} + ', this)'">&#10005;
+                </button>
+
+                <div class="pdf-wrapper">
+                    <iframe th:src="@{'/viewCv/' + ${cv.id}}"
+                            class="pdf-preview"
+                            frameborder="0">
+                    </iframe>
+                    <div class="click-overlay"
+                        th:onclick="'openPdfModal(\'/viewCv/' + ${cv.id} + '\')'">
+                    </div>
                 </div>
+
+                <h2 th:text="${cv.fileName}" style="margin-top: 30px;"></h2>
             </div>
         </section>
 
@@ -301,9 +370,7 @@
         <div id="pdfModal" class="pdf-modal">
             <span class="pdf-close" onclick="closePdfModal()">&times;</span>
             <div class="pdf-modal-content">
-                <object id="pdfViewer" type="application/pdf" width="100%" height="100%">
-                    <p>Erreur d'affichage !</p>
-                </object>
+                <iframe id="pdfViewer" frameborder="0"></iframe>
             </div>
         </div>
     </main>
@@ -346,24 +413,43 @@
             }
         });
 
+        function deleteCv(id, element) {
+            if (confirm("Supprimer ce CV ?")) {
+                fetch(`/deleteCv/${id}`, { method: 'DELETE' })
+                    .then(res => {
+                        if (res.ok) element.closest('.feature').remove();
+                        else alert("Erreur lors de la suppression !");
+                    });
+            }
+        }
+
         function openPdfModal(url) {
             const modal = document.getElementById('pdfModal');
             const pdfViewer = document.getElementById('pdfViewer');
-            pdfViewer.data = url;
+            pdfViewer.src = url;
             modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
 
         function closePdfModal() {
-            document.getElementById('pdfModal').style.display = 'none';
+            const modal = document.getElementById('pdfModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
-        // Fermer la modal si on clique en dehors
-        window.onclick = function(event) {
-            const modal = document.getElementById('pdfModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
+        // Fermer avec Echap
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closePdfModal();
             }
-        }
+        });
+
+        // Fermer en cliquant en dehors
+        document.getElementById('pdfModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closePdfModal();
+            }
+        });
     </script>
     <footer class="footer">
         <p>Copyright &copy; 2025 CareerTrackr. Tous droits réservés.</p>

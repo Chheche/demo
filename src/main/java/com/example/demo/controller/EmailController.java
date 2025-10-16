@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,8 @@ public class EmailController {
     }
 
     @PostMapping("/{id}/etat")
-    public ResponseEntity<Void> updateEtat(@PathVariable Long id, @RequestBody String newEtat) {
+    public ResponseEntity<Void> updateEtat(@PathVariable Long id, @RequestBody Map<String, String> data) {
+        String newEtat = data.get("etat");
         emailService.updateEtat(id, newEtat);
         return ResponseEntity.ok().build();
     }

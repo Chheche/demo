@@ -263,15 +263,15 @@
         }
 
         .card-sent {
-            background-color: #ffab40 !important;
+            background-color: #ff9a15 !important;
         }
         
         .card-interview {
-            background-color: #66bb6a !important;
+            background-color: #23ce2b !important;
         }
         
         .card-rejected {
-            background-color: #ef5350 !important;
+            background-color: #e11b18 !important;
         }
 
         .kanban-card {
@@ -294,13 +294,13 @@
         }
 
         .card-position {
-            color: #5e6c84;
+            color: #000000;
             font-size: 14px;
         }
 
         .card-date {
             font-size: 12px;
-            color: #6b778c;
+            color: #000000;
             margin-top: 8px;
         }
 
@@ -408,6 +408,70 @@
         .save-button:hover {
             background-color: #45a049;
         }
+
+        /* Ajout des styles responsifs */
+        @media (max-width: 1200px) {
+            .kanban-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .kanban-column {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 20px 10px;
+                padding: 16px;
+            }
+
+            .main-title {
+                font-size: 1.5rem;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+            }
+
+            .filter-input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .headerLinks a {
+                margin-left: 12px;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                width: 90%;
+                margin: 10% auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 1.2rem;
+            }
+
+            .logo img {
+                height: 32px;
+            }
+
+            .kanban-card {
+                padding: 10px;
+            }
+
+            .add-button {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -441,7 +505,7 @@
         <div class="kanban-container">
             <!-- Accusé de réception -->
             <div class="kanban-column" data-status="envoyee" ondragover="allowDrop(event)" ondrop="drop(event)">
-                <div class="kanban-title">Accusé de réception</div>
+                <div class="kanban-title">Accusés de réception</div>
                 <div th:each="email : ${data}" th:if="${email.etat == 'envoyee'}" class="kanban-card card-sent" draggable="true" ondragstart="drag(event)">
                     <div class="card-company" th:text="${email.company}">Entreprise</div>
                     <div class="card-position" th:text="${email.job}">Poste</div>
@@ -650,7 +714,7 @@
         // Mise à jour dans la BDD
         const id = cardId.replace('card-', '');
         fetch(`/api/emails/${id}/etat`, {
-            method: 'PUT',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ etat: newEtat })
         })

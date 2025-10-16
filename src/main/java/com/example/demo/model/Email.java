@@ -16,6 +16,7 @@ public class Email {
     private String etat;
 
     private String userEmail;
+    private String source;
 
 
     public Email() {}
@@ -41,4 +42,10 @@ public class Email {
 
     public String getEtat() { return etat; }
     public void setEtat(String etat) { this.etat = etat; }
+
+    public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+
+    public String getSource() { return source; }
+    public void setSource(String source) { this.source = source; }
 }

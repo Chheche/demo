@@ -2,7 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.model.Cv;
 import com.example.demo.repository.CvRepository;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,6 +33,7 @@ public class CvService {
         return cvRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<Cv> getCvsByUserEmail(String email) {
         return cvRepository.findByUserEmail(email);
     }
@@ -39,7 +42,11 @@ public class CvService {
         return cvRepository.findById(id);
     }
 
-    public void deleteCv(Long id) {
+    public Optional<Cv> findById(Long id) {
+        return cvRepository.findById(id);
+    }
+
+    public void deleteById(Long id) {
         cvRepository.deleteById(id);
     }
 }

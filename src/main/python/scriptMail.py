@@ -20,9 +20,9 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 nlp = spacy.load("fr_core_news_md")
 
 CATEGORIES = {
-    "refusee": ["regrettons", "pas retenue", "refus", "malheureusement", "négatif"],
-    "entretien": ["entretien", "convocation", "rendez-vous", "disponibilités", "call", "meeting"],
-    "envoyee": ["nous avons bien reçu", "confirmation de réception", "accusé de réception"]
+    "refusee": ["regrettons", "pas retenue", "refus", "malheureusement", "négatif", "désolé", "refusé", "rejetté", "ne nous permettent pas"],
+    "entretien": ["entretien", "convocation", "rendez-vous", "disponibilités", "succès", "réussi", "nous sommes heureux"],
+    "envoyee": ["nous avons bien reçu", "confirmation de réception", "accusé de réception", "a été crée", "a bien été reçu", "a bien été enregistrée", "est arrivée"]
 }
 
 def gmail_auth():
@@ -73,88 +73,108 @@ def gmail_auth():
         print(f"Erreur lors de la création du service Gmail : {e}")
         raise
 
+def split_camel_case(s):
+    return re.sub(r'([a-z])([A-Z])', r'\1 \2', s)
+
+def clean_company_name(name):
+    common_words = ['groupe', 'group', 'inc', 'sa', 'sas', 'sarl', 'ltd', 'limited', 'corp', 'careers']
+    name = name.lower()
+    name = name.replace('-', ' ').replace('_', ' ').replace('.', ' ')
+    words = name.split()
+    words = [w for w in words if w not in common_words]
+    
+    return ' '.join(word.capitalize() for word in words if word)
+
 def extract_company(sender: str):
     name_part = sender.split("<")[0].strip()
-    email_part = sender.split("<")[-1].replace(">", "").strip() if "<" in sender else ""
+    email_part = sender.split("<")[-1].replace(">", "").strip() if "<" in sender else sender
 
     doc = nlp(name_part)
     orgs = [ent.text for ent in doc.ents if ent.label_ == "ORG"]
     if orgs:
-        return orgs[0]
+        return clean_company_name(orgs[0])
 
-    match = re.search(r'@([A-Za-z0-9.-]+)', email_part)
+    match = re.search(r'([\w\.-]+)@([\w\.-]+)', email_part)
     if match:
-        domain = match.group(1).split(".")[0]
-        return domain.capitalize()
-
-    return name_part
-
-def get_first_mail(service):
-    try:
-        results = service.users().messages().list(userId='me', maxResults=5).execute()
-        messages = results.get('messages', [])
-
-        if not messages:
-            print("Aucun mail trouvé.")
-            return
-
-        msg = service.users().messages().get(userId='me', id=messages[0]['id']).execute()
-
-        #Récupération infos
-        headers = msg['payload']['headers']
-        subject = next((h['value'] for h in headers if h['name'] == 'Subject'), "Pas d'objet")
-        sender = next((h['value'] for h in headers if h['name'] == 'From'), "Expéditeur inconnu")
-
-        #Date
-        internal_date = msg.get("internalDate")
-        if internal_date:
-            date = datetime.fromtimestamp(int(internal_date)/1000).strftime("%d/%m/%Y %H:%M")
-        else:
-            date = "Date inconnue"
-
-        #Job
-        doc = nlp(subject)
-        jobs = [ent.text for ent in doc.ents if ent.label_ in ["MISC", "ORG", "PER"]]
+        user_part, domain = match.groups()
+        domain_parts = domain.split('.')
         
-        if "-" in subject:
-            job_title = subject.split("-")[-1].strip()
-        else:
-            job_title = subject
+        generic_domains = {'gmail', 'yahoo', 'hotmail', 'outlook', 'wanadoo', 
+                         'orange', 'profils', 'noreply', 'careers', 'free', 
+                         'laposte', 'aol', 'recruitment'}
 
-        #Entreprise
-        company = extract_company(sender)
+        if domain_parts[0].lower() not in generic_domains:
+            return clean_company_name(domain_parts[0])
+        
+        cleaned_user = clean_company_name(user_part)
+        if cleaned_user and len(cleaned_user) > 2:
+            return cleaned_user
 
-        #Corps mail
-        mail_body = ""
-        if "parts" in msg["payload"]:
-            for part in msg["payload"]["parts"]:
-                if part["mimeType"] == "text/plain":
-                    mail_body = base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8")
-                    break
-        else:
-            mail_body = base64.urlsafe_b64decode(msg["payload"]["body"]["data"]).decode("utf-8")
+    return clean_company_name(name_part)
 
-        text = mail_body.lower()
+def parse_mail(msg):
+    headers = msg['payload']['headers']
+    subject = next((h['value'] for h in headers if h['name'] == 'Subject'), "Pas d'objet")
+    sender = next((h['value'] for h in headers if h['name'] == 'From'), "Expéditeur inconnu")
 
-        #Etat
-        etat = "en_attente"
-        for status, keywords in CATEGORIES.items():
-            if any(kw in text for kw in keywords):
-                etat = status
+    internal_date = msg.get("internalDate")
+    date = datetime.fromtimestamp(int(internal_date)/1000).strftime("%d/%m/%Y %H:%M") if internal_date else "Date inconnue"
+
+    if "-" in subject:
+        job_title = subject.split("-")[-1].strip()
+    else:
+        job_title = subject
+
+    company = extract_company(sender)
+
+    mail_body = ""
+    if "parts" in msg["payload"]:
+        for part in msg["payload"]["parts"]:
+            if part["mimeType"] == "text/plain" and "data" in part["body"]:
+                mail_body = base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8", errors="ignore")
                 break
+    elif "data" in msg["payload"]["body"]:
+        mail_body = base64.urlsafe_b64decode(msg["payload"]["body"]["data"]).decode("utf-8", errors="ignore")
 
-        result = {
-            "job": job_title,
-            "company": company,
-            "date": date,
-            "etat": etat
-        }
-    
-        print(json.dumps(result))
+    text = mail_body.lower()
+    etat = "en_attente"
+    for status, keywords in CATEGORIES.items():
+        if any(kw in text for kw in keywords):
+            etat = status
+            break
 
+    return {
+        "job": job_title,
+        "company": company,
+        "date": date,
+        "etat": etat
+    }
+
+def get_user_email(service):
+    try:
+        profile = service.users().getProfile(userId='me').execute()
+        return profile['emailAddress']
     except Exception as e:
-        print(f"Erreur : {e}")
+        print(f"Erreur lors de la récupération de l'email : {e}")
+        return None
+
+def get_last_mails(service, n=20):
+    results = service.users().messages().list(userId='me', maxResults=n).execute()
+    messages = results.get('messages', [])
+    mails_data = []
+    user_email = get_user_email(service)
+
+    for msg_info in messages:
+        msg = service.users().messages().get(userId='me', id=msg_info['id']).execute()
+        mails_data.append(parse_mail(msg))
+
+    response_data = {
+        "userEmail": user_email,
+        "mails": mails_data
+    }
+
+    print(json.dumps(response_data, ensure_ascii=False))
 
 if __name__ == '__main__':
     service = gmail_auth()
-    get_first_mail(service)
+    get_last_mails(service, 20)
